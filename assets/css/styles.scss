@@ -1,0 +1,27 @@
+---
+---
+
+@import "main";
+
+#input-log * {
+    // height: auto;
+    line-height: 1.5em;
+    resize: none;
+    // width: 100%;
+    margin: auto 0.2em;
+    padding: 0.4em;
+    box-sizing: border-box;
+}
+#input-log button {
+    // padding: 0em;
+    line-height: 1;
+}
+#input-log {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+#input-log input {
+    flex: 1 0 70%;
+    font-size: smaller;
+}
