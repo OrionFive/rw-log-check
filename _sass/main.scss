@@ -10,3 +10,42 @@ h1 {
     font-size: 2em;
     line-height: 1;
 }
+
+@keyframes appear {
+    0% {
+        transform: scale(0);
+        max-width: 0%;
+        opacity: 0;
+    }
+    90% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.error {
+    background-color: crimson;
+    border: darkred 0.2em solid;
+    margin: 1em auto;
+    display: none;
+    border-radius: 1em;
+    max-width: 50%;
+    animation: appear 0.3s ease-out;
+    color: white;
+    font-weight: bold;
+}
+
+.success {
+    background-color: yellowgreen;
+    border: olivedrab 0.2em solid;
+    margin: 1em auto;
+    display: none;
+    border-radius: 1em;
+    max-width: 50%;
+    animation: appear 0.3s ease-out;
+    color: black;
+    font-weight: bold;
+}

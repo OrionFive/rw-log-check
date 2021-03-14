@@ -3,6 +3,8 @@ const urlParams = new URLSearchParams(queryString);
 
 const logInput = document.querySelector("#input-log input");
 const logButton = document.querySelector("#input-log button");
+const errorBox = document.querySelector(".error");
+const successBox = document.querySelector(".success");
 
 logInput.addEventListener('input', () => { logButton.disabled = false; });
 
@@ -15,12 +17,25 @@ if(urlParams.has('log'))
 }
 
 function loadUrl(url) {
-    const fetch = require('node-fetch');
-    const loadPage = async () => {
-        const response = await fetch(url)
-        return response.text()
-    }
+    const id = url.split('/').pop();
+    fetch("https://api.github.com/gists/"+id, {
+        method: 'GET'
+    }).then(response=>response.json()).then(checkResponse).then(parseUrl).catch(onError);
+}
 
-    result = {loadPage};
-    console.log(result);
+function onError(e) {
+    errorBox.style.display = "inherit";
+    errorBox.innerText = "ERROR: Couldn't load log.";
+    console.error(e);
+}
+
+function checkResponse(response){
+    return response.files["output_log.txt"].content;
+}
+
+function parseUrl(data) {
+    console.log(data);
+    successBox.style.display = "inherit";
+    // result = {loadPage};
+    // console.log(result);
 }
