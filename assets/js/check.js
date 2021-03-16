@@ -20,12 +20,22 @@ function loadUrl(url) {
     const id = url.split('/').pop();
     fetch("https://api.github.com/gists/"+id, {
         method: 'GET'
-    }).then(response=>response.json()).then(checkResponse).then(parseUrl).catch(onError);
+    }).then(response=>response.json()).then(checkResponse).then(parseUrl, onLoadFail).then(onParseSuccess, onParseFail);
 }
 
-function onError(e) {
+function onParseSuccess(e) {
+    successBox.style.display = "inherit";
+}
+
+function onLoadFail(e) {
     errorBox.style.display = "inherit";
     errorBox.innerText = "ERROR: Couldn't load log.";
+    console.error(e);
+}
+
+function onParseFail(e) {
+    errorBox.style.display = "inherit";
+    errorBox.innerText = "ERROR: Unexpected problem while scanning log.";
     console.error(e);
 }
 
@@ -34,7 +44,6 @@ function checkResponse(response){
 }
 
 function parseUrl(data) {
-    successBox.style.display = "inherit";
     const log = v.split(data, '\n');
 
     checkLoadedGame(log);
@@ -43,8 +52,11 @@ function parseUrl(data) {
 function checkLoadedGame(log) {
     const startLoadedIndex = log.findIndex(l => v.startsWith(l, "Loading game from file"));
     const loadedLog = log.slice(startLoadedIndex);
-    
+
     document.getElementById("output").style.visibility = "visible";
+
+    // STARTUP
+
 
     // RUNTIME
     const mods = getLoadedMods(loadedLog);
@@ -61,8 +73,7 @@ function checkLoadedGame(log) {
 function getLoadedMods(loadedLog) {
     loadedLog = loadedLog.slice(1); // skip first row
     const lastModIndex = loadedLog.findIndex(l => !v.startsWith(l, "  ")); // find end of mod list
-    const loadedMods = loadedLog.slice(0, lastModIndex).map(mod => v.trimLeft(mod, ' -')); // remove end and trim away "  - "
-    return loadedMods;
+    return loadedLog.slice(0, lastModIndex).map(mod => v.trimLeft(mod, ' -')); // remove end and trim away "  - "
 }
 
 function getConsoleLogs(loadedLog) {
@@ -70,14 +81,15 @@ function getConsoleLogs(loadedLog) {
     const lastModIndex = loadedLog.findIndex(l => !v.startsWith(l, "  ")); // find end of mod list
     const sliced = loadedLog.slice(lastModIndex);
     console.log(sliced);
-    return sliced.map((log, i) => parseOutput(sliced, i)).filter(log => log);
+    const parsed = sliced.map((log, i) => parseOutput(sliced, i)).filter(log => log);
+    return _.groupBy(parsed, 'content');
 }
 
 function getWarnings(consoleLogs) {
-    return consoleLogs.filter(log => log.type === "warning");
+    return _.filter(consoleLogs, log => log[0].type === "warning");
 }
 function getErrors(consoleLogs) {
-    return consoleLogs.filter(log => log.type === "error");
+    return _.filter(consoleLogs, log => log[0].type === "error");
 }
 
 function parseOutput(consoleLogs, index) {
@@ -115,11 +127,10 @@ function newListItem(text) {
     return li;
 }
 
-function newLogListItem(logItem) {
+function newLogListItem(logItems) {
     const li = document.createElement("li");
-    li.innerHTML = logItem.content;
-    li.title = logItem.content;
-    li.classList.add(logItem.type);
-    console.log(li);
+    li.innerHTML = `(${logItems.length}x) ${logItems[0].content}`;
+    //li.title = logItems;
+    li.classList.add(logItems[0].type);
     return li;
 }
