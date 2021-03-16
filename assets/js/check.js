@@ -3,8 +3,8 @@ const urlParams = new URLSearchParams(queryString);
 
 const logInput = document.querySelector("#input-log input");
 const logButton = document.querySelector("#input-log button");
-const errorBox = document.querySelector(".error");
-const successBox = document.querySelector(".success");
+const errorBox = document.querySelector(".error-bubble");
+const successBox = document.querySelector(".success-bubble");
 
 logInput.addEventListener('input', () => { logButton.disabled = false; });
 
