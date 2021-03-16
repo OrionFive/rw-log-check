@@ -25,3 +25,42 @@
     flex: 1 0 70%;
     font-size: smaller;
 }
+
+#output {
+    visibility: hidden;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    grid-auto-flow: dense;
+}
+
+#output li {
+    font-size: smaller;
+}
+
+#output h2 {
+    grid-column-start: span 3;
+}
+
+#output #active-mods-list {
+    grid-row-start: span 4;
+}
+
+#output #warnings-errors-runtime-list {
+    grid-column-start: span 2;
+}
+
+#output #errors-startup-list {
+    grid-column-start: span 2;
+}
+
+#output li.warning {
+    background-color: rgb(100, 72, 0);
+    border-radius: 8px;
+    margin: 4px 4px;
+}
+#output li.error {
+    background-color: rgb(68, 0, 0);
+    border-radius: 8px;
+    margin: 4px 4px;
+}
