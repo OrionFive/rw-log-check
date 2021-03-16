@@ -58,7 +58,6 @@ function parseUrl(data) {
 function checkStartup(log) {
 
     const startupLogs = getStartupLogs(log);
-    console.log(startupLogs);
     const startupErrors = getErrors(startupLogs);
     outputList("startup-errors-list", startupErrors, newLogListItem);
 }
@@ -85,11 +84,9 @@ function getLoadedMods(loadedLog) {
 }
 
 function getStartupLogs(loadedLog) {
-    console.log(loadedLog);
     const firstLineIndex = loadedLog.findIndex(l => l.startsWith("Log file contents:"));
-    alert(firstLineIndex);
     const lastLineIndex = loadedLog.findIndex(l => l.startsWith("Loading game from file"));
-    alert(lastLineIndex);
+
     const sliced = loadedLog.slice(firstLineIndex, lastLineIndex);
     const parsed = sliced.map((log, i) => parseOutput(sliced, i)).filter(log => log);
     return _.groupBy(parsed, 'content');
@@ -128,8 +125,9 @@ function parseOutput(consoleLogs, index) {
 function outputList(listId, items, constructor) {
     const list = document.querySelector(`#${listId}`);
     const header = list.querySelector("h3");
-
-    header.innerText += ` (${items.length})`;
+    
+    const amount = _.isArray(items[0]) ? _.sumBy(items, i=>i.length) : items.length;
+    header.innerText += ` (${amount})`;
 
     const ul = document.createElement("ul");
 
