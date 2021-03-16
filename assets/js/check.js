@@ -46,19 +46,27 @@ function checkResponse(response){
 function parseUrl(data) {
     const log = data.split('\n');
 
+    document.getElementById("output").style.visibility = "visible";
+
+    // STARTUP (from start to first load)
+    checkStartup(log);
+
+    // RUNTIME (from last load to end)
     checkLoadedGame(log);
+}
+
+function checkStartup(log) {
+
+    const startupLogs = getStartupLogs(log);
+    console.log(startupLogs);
+    const startupErrors = getErrors(startupLogs);
+    outputList("startup-errors-list", startupErrors, newLogListItem);
 }
 
 function checkLoadedGame(log) {
     const startLoadedIndex = log.findIndex(l => l.startsWith("Loading game from file"));
     const loadedLog = log.slice(startLoadedIndex);
 
-    document.getElementById("output").style.visibility = "visible";
-
-    // STARTUP
-
-
-    // RUNTIME
     const mods = getLoadedMods(loadedLog);
     outputList("active-mods-list", mods, newListItem);
 
@@ -74,6 +82,17 @@ function getLoadedMods(loadedLog) {
     loadedLog = loadedLog.slice(1); // skip first row
     const lastModIndex = loadedLog.findIndex(l => !l.startsWith("  ")); // find end of mod list
     return loadedLog.slice(0, lastModIndex).map(mod => mod.trimLeft(' -')); // remove end and trim away "  - "
+}
+
+function getStartupLogs(loadedLog) {
+    console.log(loadedLog);
+    const firstLineIndex = loadedLog.findIndex(l => l.startsWith("Log file contents:"));
+    alert(firstLineIndex);
+    const lastLineIndex = loadedLog.findIndex(l => l.startsWith("Loading game from file"));
+    alert(lastLineIndex);
+    const sliced = loadedLog.slice(firstLineIndex, lastLineIndex);
+    const parsed = sliced.map((log, i) => parseOutput(sliced, i)).filter(log => log);
+    return _.groupBy(parsed, 'content');
 }
 
 function getConsoleLogs(loadedLog) {
