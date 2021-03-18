@@ -110,7 +110,7 @@ function getWarnings(consoleLogs) {
     return _.filter(consoleLogs, log => log[0].type === "warning");
 }
 function getErrors(consoleLogs) {
-    return _.filter(consoleLogs, log => log[0].type === "error");
+    return _.filter(consoleLogs, log => log[0].type === "error" || log[0].type === "exception");
 }
 
 function parseOutput(consoleLogs, index) {
@@ -118,14 +118,19 @@ function parseOutput(consoleLogs, index) {
     const next = index < consoleLogs.length ? consoleLogs[index+1] : null;
     
     if(!current || current.startsWith("(") || current.startsWith(" ")) return null;
+
+    if(current.includes("Exception")) return {
+        type: "exception",
+        content: current
+    };
     if(next != null && next.startsWith("(")) return {
         type: "error",
         content: current
-    }
+    };
     else return {
         type: "message",
         content: current
-    }
+    };
 }
 
 function outputList(listId, items, itemConstructor, title) {
@@ -152,14 +157,14 @@ function outputList(listId, items, itemConstructor, title) {
 
 function newListItem(text) {
     const li = document.createElement("li");
-    li.innerHTML = text;
+    li.innerText = text;
     return li;
 }
 
 function newLogListItem(logItems) {
     const li = document.createElement("li");
-    li.innerHTML = `(${logItems.length}x) ${logItems[0].content}`;
-    //li.title = logItems;
+    li.innerText = `(${logItems.length}x) ${logItems[0].content}`;
+    li.title = _.upperFirst(logItems[0].type);
     li.classList.add(logItems[0].type);
     return li;
 }

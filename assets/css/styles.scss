@@ -34,10 +34,6 @@
     grid-auto-flow: dense;
 }
 
-#output li {
-    font-size: smaller;
-}
-
 #output h2 {
     grid-column-start: span 3;
 }
@@ -54,13 +50,35 @@
     grid-column-start: span 2;
 }
 
-#output li.warning {
-    background-color: rgb(100, 72, 0);
+#output li {
+    font-size: smaller;
+    padding: 1px 4px;
     border-radius: 8px;
     margin: 4px 4px;
 }
+
+#output li.warning {
+    background-color: rgb(100, 72, 0);
+}
 #output li.error {
     background-color: rgb(68, 0, 0);
-    border-radius: 8px;
-    margin: 4px 4px;
+}
+
+#output li.exception {
+    background-color: rgb(158, 0, 0);
+}
+
+@keyframes listAppear {
+    from {
+        height: 0;
+    }
+    to {
+        height: 100%;
+    }
+}
+
+#output section {
+    // animation: listAppear 0.6s ease-in 1s both;
+    overflow-wrap: break-word;
+    overflow-y: clip;
 }
