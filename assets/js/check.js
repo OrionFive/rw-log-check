@@ -66,7 +66,7 @@ function checkStartup(log) {
 
     const startupLogs = getStartupLogs(log);
     const startupErrors = getErrors(startupLogs);
-    outputList("startup-errors-list", startupErrors, newLogListItem);
+    outputList("startup-errors-list", startupErrors, newLogListItem, "Errors & warnings at startup");
 }
 
 function checkLoadedGame(log) {
@@ -74,14 +74,13 @@ function checkLoadedGame(log) {
     const loadedLog = log.slice(startLoadedIndex);
 
     const mods = getLoadedMods(loadedLog);
-    outputList("active-mods-list", mods, newListItem);
+    outputList("active-mods-list", mods, newListItem, "Active mods");
 
     const consoleLogs = getConsoleLogs(loadedLog);
-    console.log(consoleLogs);
     const warnings = getWarnings(consoleLogs);
     const errors = getErrors(consoleLogs);
     const combined = warnings.concat(errors);
-    outputList("warnings-errors-runtime-list", combined, newLogListItem);
+    outputList("warnings-errors-runtime-list", combined, newLogListItem, "Errors & warnings after load");
 }
 
 function getLoadedMods(loadedLog) {
@@ -129,17 +128,24 @@ function parseOutput(consoleLogs, index) {
     }
 }
 
-function outputList(listId, items, constructor) {
-    const list = document.querySelector(`#${listId}`);
-    const header = list.querySelector("h3");
+function outputList(listId, items, itemConstructor, title) {
+    if(items.length == 0) return;
+
+    const output = document.getElementById("output");
+    const list = document.createElement("section");
+    list.id = listId;
+    output.append(list);
     
+    const header = document.createElement("h3");  
     const amount = _.isArray(items[0]) ? _.sumBy(items, i=>i.length) : items.length;
-    header.innerText += ` (${amount})`;
+    header.innerText = `${title} (${amount})`;
+    list.append(header);
 
     const ul = document.createElement("ul");
 
     items.forEach(item => {
-        ul.appendChild(constructor(item));
+        let child = itemConstructor(item);
+        ul.appendChild(child);
     });
     list.append(ul);
 }
