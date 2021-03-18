@@ -7,6 +7,9 @@ const errorBox = document.querySelector(".error-bubble");
 const successBox = document.querySelector(".success-bubble");
 
 logInput.addEventListener('input', () => { logButton.disabled = false; });
+logInput.addEventListener('focus', onLogInputFocus());
+logInput.focus();
+window.setTimeout(onLogInputFocus, 50);
 
 if(urlParams.has('log'))
 {
@@ -14,6 +17,10 @@ if(urlParams.has('log'))
     logButton.disabled = true;
 
     loadUrl(logInput.value);
+}
+
+function onLogInputFocus() {
+    logInput.setSelectionRange(0, this.value?.length); logInput.select(); 
 }
 
 function loadUrl(url) {
