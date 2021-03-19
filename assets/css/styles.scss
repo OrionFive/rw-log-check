@@ -62,6 +62,7 @@
     border-radius: 8px;
     margin: 2px;
     flex: 1;
+    background-color: rgb(28, 48, 48);
 }
 
 #output li p.warning {
@@ -75,8 +76,14 @@
     background-color: rgb(158, 0, 0);
 }
 
-#output li p.unknown {
-    background-color: darkcyan;
+#output li p.unknown-icon {
+    background-color: rgb(28, 48, 48);
+    font-weight: bold;
+    font-size: x-large;
+    flex:unset;
+    width: 12px;
+    text-align: center;
+}
     font-weight: bold;
     font-size: x-large;
     flex:unset;

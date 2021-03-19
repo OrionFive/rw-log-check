@@ -162,14 +162,17 @@ function newLogListItem(logItems) {
     }
     content.title = _.upperFirst(logItems[0].type);
     if(logItems[0].explanation) content.title = `${_.upperFirst(logItems[0].type)}:\n${logItems[0].explanation}`;
-    content.classList.add(logItems[0].type);
     // Unknown
     if(logItems[0].unknown) {
         const unknown = document.createElement("p");
         unknown.innerText = "?";
-        unknown.classList.add("unknown");
+        unknown.classList.add("unknown-icon");
         unknown.title = "This output is not in the database.";
         li.append(unknown);
+        content.title = "Unknown";
+    } else {
+        content.classList.add(logItems[0].type);
+    }
     }
     // Content
     li.append(content);
