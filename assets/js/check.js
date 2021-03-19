@@ -96,7 +96,7 @@ function getStartupLogs(loadedLog) {
     const lastLineIndex = loadedLog.findIndex(l => l.startsWith("Loading game from file"));
 
     const sliced = loadedLog.slice(firstLineIndex, lastLineIndex);
-    const parsed = sliced.map((log, i) => parseOutput(sliced, i)).filter(log => log);
+    const parsed = sliced.map((log, i) => parseOutput(sliced, i, situations.startup)).filter(log => log);
     return _.groupBy(parsed, 'content');
 }
 
@@ -104,7 +104,7 @@ function getConsoleLogs(loadedLog) {
     loadedLog = loadedLog.slice(1); // skip first row
     const lastModIndex = loadedLog.findIndex(l => !l.startsWith("  ")); // find end of mod list
     const sliced = loadedLog.slice(lastModIndex);
-    const parsed = sliced.map((log, i) => parseOutput(sliced, i)).filter(log => log);
+    const parsed = sliced.map((log, i) => parseOutput(sliced, i, situations.runtime)).filter(log => log);
     return _.groupBy(parsed, 'content');
 }
 
@@ -115,8 +115,11 @@ function getErrors(consoleLogs) {
     return _.filter(consoleLogs, log => log[0].type === "error" || log[0].type === "exception");
 }
 
-function parseOutput(consoleLogs, index) {
-    return classifyLog(consoleLogs, index);
+function parseOutput(consoleLogs, index, situation) {
+    const result = classifyLog(consoleLogs, index, situation);
+    // Add situations
+    if(result) result.situation = situation;
+    return result;
 }
 
 function outputList(listId, items, itemConstructor, title) {

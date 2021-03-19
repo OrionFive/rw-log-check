@@ -2,28 +2,101 @@
 ---
 */
 
-function classifyLog(logs, index) {
+const classifiersException = [];
+const classifiersNormal = [];
+
+const situations = {
+    startup: 'startup',
+    runtime: 'runtime'
+}
+
+function classifyLog(logs, index, situation) {
     const current = logs[index];
     const next = index < logs.length ? logs[index+1] : null;
     
     if(!current || current.startsWith("(") || current.startsWith(" ")) return null;
 
-    //const known = checkDatabase(logs, index);
-    //if(known) return known;
-    
+    // Exceptions
+    if(next && next.startsWith("  at ")) {
+        const content = getExceptionContent(logs, index);
+        const known = checkClassifiersException(content, situation);
+        if(known) return known;
+        else return {
+            type: "exception",
+            content: current,
+            unknown: true
+        };
+    }
 
-    if(current.includes("Exception")) return {
-        type: "exception",
-        content: current
-    };
-    if(next != null && next.startsWith("(")) return {
+    // Warnings & errors
+    if(next && next.startsWith("(")) {
+        const known = checkClassifiersNormal(current, situation);
+        if(known) return known;
+        else return {
         type: "error",
-        content: current
-    };
-    else return {
+        content: current,
+        unknown: true
+        };
+    }
+    // Other
+    return {
         type: "message",
-        content: current
+        content: current,
+        unknown: true
     };
+}
+
+function getExceptionContent(logs, index) {
+    let result = logs[index];
+    let next = result;
+    while (next) {
+        index++;
+        if(index >= logs.length) break;
+        next = logs[index];
+        if(next.startsWith("  at ")) {
+            result += "\n"
+            result += next;
+        } else break;
+    }
+    console.log(result);
+    return result;
+}
+
+function checkClassifiersException(content, situation) {
+    for (const classifier of classifiersException) {
+        const result = classifier(content, situation);
+        if(result) return result;
+    }
+}
+
+function checkClassifiersNormal(content, situation) {
+    for (const classifier of classifiersNormal) {
+        const result = classifier(content, situation);
+        if(result) return result;
+    }
+}
+
+function registerClassifierException(method) {
+    // TODO: cache the checks inside the classifiers
+    classifiersException.push(method);
+}
+
+function registerClassifierNormal(method) {
+    // TODO: cache the checks inside the classifiers
+    classifiersNormal.push(method);
+}
+
+function tryMatch(content, check) {
+    // Escape brackets and such
+    check = check.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    check = check.replaceAll("%s", "(.*)"); // capture strings
+    check = check.replaceAll("%i", "(-?[\\d]+)"); // capture ints
+    check = check.replaceAll("%f", "([+-]?[0-9]+(?:[.][0-9]+)?)"); // capture floats and ints
+    //check = `^${check}$`;
+    const result = content.match(check);
+    console.log(`Checked against '${check}':\n${content}\n`)
+    if(result) console.log(result);
+    return result;
 }
 
 // Load all other script files inside this and subfolders 
