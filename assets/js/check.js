@@ -1,3 +1,5 @@
+---
+---
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 
@@ -114,23 +116,7 @@ function getErrors(consoleLogs) {
 }
 
 function parseOutput(consoleLogs, index) {
-    const current = consoleLogs[index];
-    const next = index < consoleLogs.length ? consoleLogs[index+1] : null;
-    
-    if(!current || current.startsWith("(") || current.startsWith(" ")) return null;
-
-    if(current.includes("Exception")) return {
-        type: "exception",
-        content: current
-    };
-    if(next != null && next.startsWith("(")) return {
-        type: "error",
-        content: current
-    };
-    else return {
-        type: "message",
-        content: current
-    };
+    return classifyLog(consoleLogs, index);
 }
 
 function outputList(listId, items, itemConstructor, title) {
@@ -168,3 +154,6 @@ function newLogListItem(logItems) {
     li.classList.add(logItems[0].type);
     return li;
 }
+
+/* LOAD LOG PARSER
+{% include_relative logParser/logParser.js %}
