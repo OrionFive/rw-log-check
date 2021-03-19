@@ -84,6 +84,9 @@
     width: 12px;
     text-align: center;
 }
+
+#output li p.exception-icon {
+    background-color: rgb(158, 0, 0);
     font-weight: bold;
     font-size: x-large;
     flex:unset;

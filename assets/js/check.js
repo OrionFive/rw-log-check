@@ -173,6 +173,13 @@ function newLogListItem(logItems) {
     } else {
         content.classList.add(logItems[0].type);
     }
+    // Exception
+    if(logItems[0].type === "exception") {
+        const exception = document.createElement("p");
+        exception.innerText = "!";
+        exception.classList.add("exception-icon");
+        exception.title = "This is an exception. Exceptions cause other (often unrelated) code to not run.";
+        li.append(exception);
     }
     // Content
     li.append(content);
