@@ -68,7 +68,7 @@ function checkStartup(log) {
 
     const startupLogs = getStartupLogs(log);
     const startupErrors = getErrors(startupLogs);
-    outputList("startup-errors-list", startupErrors, newLogListItem, "Errors & warnings at startup");
+    outputList("startup-errors-list", startupErrors, newLogListItem, "Errors at startup");
 }
 
 function checkLoadedGame(log) {
@@ -143,15 +143,49 @@ function outputList(listId, items, itemConstructor, title) {
 
 function newListItem(text) {
     const li = document.createElement("li");
-    li.innerText = text;
+    const content = document.createElement("p");
+    content.innerText = text;
+    li.append(content);
     return li;
 }
 
 function newLogListItem(logItems) {
     const li = document.createElement("li");
-    li.innerText = `(${logItems.length}x) ${logItems[0].content}`;
-    li.title = _.upperFirst(logItems[0].type);
-    li.classList.add(logItems[0].type);
+    const content = document.createElement("p");
+    if(typeof logItems[0].content === 'object') {
+        content.innerText = `(${logItems.length}x) ${logItems[0].content[0]}`;
+    } else {
+        content.innerText = `(${logItems.length}x) ${logItems[0].content}`;
+    }
+    content.title = _.upperFirst(logItems[0].type);
+    if(logItems[0].explanation) content.title = `${_.upperFirst(logItems[0].type)}:\n${logItems[0].explanation}`;
+    content.classList.add(logItems[0].type);
+    // Unknown
+    if(logItems[0].unknown) {
+        const unknown = document.createElement("p");
+        unknown.innerText = "?";
+        unknown.classList.add("unknown");
+        unknown.title = "This output is not in the database.";
+        li.append(unknown);
+    }
+    // Content
+    li.append(content);
+    // Offending mods
+    if(logItems[0].offendingModNames) {
+        const offending = document.createElement("p");
+        offending.innerText = logItems[0].offendingModNames.join(", ");
+        offending.classList.add("offending");
+        offending.title = "Mods that are probably causing this.";
+        li.append(offending);
+    }
+    // TODO: Automatically turn mod ids to mod names
+    if(logItems[0].offendingModIds) {
+        const offending = document.createElement("p");
+        offending.innerText = logItems[0].offendingModIds.join(", ");
+        offending.classList.add("offending");
+        offending.title = "Mods that are probably causing this.";
+        li.append(offending);
+    }
     return li;
 }
 

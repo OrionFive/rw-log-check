@@ -51,21 +51,43 @@
 }
 
 #output li {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 4px;
+}
+
+#output li p {
     font-size: smaller;
     padding: 1px 4px;
     border-radius: 8px;
-    margin: 4px 4px;
+    margin: 2px;
+    flex: 1;
 }
 
-#output li.warning {
+#output li p.warning {
     background-color: rgb(100, 72, 0);
 }
-#output li.error {
+#output li p.error {
     background-color: rgb(68, 0, 0);
 }
 
-#output li.exception {
+#output li p.exception {
     background-color: rgb(158, 0, 0);
+}
+
+#output li p.unknown {
+    background-color: darkcyan;
+    font-weight: bold;
+    font-size: x-large;
+    flex:unset;
+    width: 12px;
+    text-align: center;
+}
+
+#output li p.offending {
+    background-color: rgb(158, 0, 0);
+    font-weight: bold;
+    flex-basis: 100%;
 }
 
 @keyframes listAppear {
