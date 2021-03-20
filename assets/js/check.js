@@ -65,7 +65,6 @@ function parseUrl(data) {
 }
 
 function checkStartup(log) {
-
     const startupLogs = getStartupLogs(log);
     const startupErrors = getErrors(startupLogs);
     outputList("startup-errors-list", startupErrors, newLogListItem, "Errors at startup");
@@ -96,7 +95,7 @@ function getStartupLogs(loadedLog) {
     const lastLineIndex = loadedLog.findIndex(l => l.startsWith("Loading game from file"));
 
     const sliced = loadedLog.slice(firstLineIndex, lastLineIndex);
-    const parsed = sliced.map((log, i) => parseOutput(sliced, i, situations.startup)).filter(log => log);
+    const parsed = iterateLog(sliced, situations.startup);
     return _.groupBy(parsed, 'content');
 }
 
@@ -104,8 +103,18 @@ function getConsoleLogs(loadedLog) {
     loadedLog = loadedLog.slice(1); // skip first row
     const lastModIndex = loadedLog.findIndex(l => !l.startsWith("  ")); // find end of mod list
     const sliced = loadedLog.slice(lastModIndex);
-    const parsed = sliced.map((log, i) => parseOutput(sliced, i, situations.runtime)).filter(log => log);
+    const parsed = iterateLog(sliced, situations.runtime);
     return _.groupBy(parsed, 'content');
+}
+
+function iterateLog(slicedLog, situation) {
+    const log = { lines: slicedLog }; // pass log as object, so we can change index
+    const result = [];
+    for (log.index = 0; log.index < log.lines.length; log.index++) {
+        const output = parseOutput(log, situation);
+        if(output) result.push(output);
+    }
+    return result;
 }
 
 function getWarnings(consoleLogs) {
@@ -115,8 +124,8 @@ function getErrors(consoleLogs) {
     return _.filter(consoleLogs, log => log[0].type === "error" || log[0].type === "exception");
 }
 
-function parseOutput(consoleLogs, index, situation) {
-    const result = classifyLog(consoleLogs, index, situation);
+function parseOutput(log, situation) {
+    const result = classifyLog(log, situation);
     // Add situations
     if(result) result.situation = situation;
     return result;

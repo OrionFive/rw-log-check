@@ -10,16 +10,16 @@ const situations = {
     runtime: 'runtime'
 }
 
-function classifyLog(logs, index, situation) {
-    const current = logs[index];
-    const next = index < logs.length ? logs[index+1] : null;
-    
+function classifyLog(log, situation) {
+    const current = log.lines[log.index];
+    const next = log.index < log.lines.length ? log.lines[log.index+1] : null;
     if(!current || current.startsWith("(") || current.startsWith(" ")) return null;
 
     // Exceptions
     if(next && next.startsWith("  at ") || current.includes("Exception:")) {
-        const content = getExceptionContent(logs, index);
+        const content = getExceptionContent(log);
         const known = checkClassifiersException(content, situation);
+
         if(known) return known;
         
         else {
@@ -51,13 +51,13 @@ function classifyLog(logs, index, situation) {
     };
 }
 
-function getExceptionContent(logs, index) {
-    let result = logs[index];
+function getExceptionContent(log) {
+    let result = log.lines[log.index];
     let next = result;
     while (next) {
-        index++;
-        if(index >= logs.length) break;
-        next = logs[index];
+        log.index++;
+        if(log.index >= log.lines.length) break;
+        next = log.lines[log.index];
         if(!next.startsWith("(Filename:")) {
             result += "\n"
             result += next;
@@ -123,6 +123,10 @@ function isKnownNamespace(namespace) {
         case "RimWorld": return true;
         default: return false;
     }
+}
+
+function getLineCount(text) {
+    return (text.match(/\n/g) || '').length;
 }
 
 // Load all other script files inside this and subfolders 
