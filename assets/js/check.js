@@ -88,7 +88,7 @@ function checkLoadedGame(log) {
 function getLoadedMods(loadedLog) {
     loadedLog = loadedLog.slice(1); // skip first row
     const lastModIndex = loadedLog.findIndex(l => !l.startsWith("  ")); // find end of mod list
-    return loadedLog.slice(0, lastModIndex).map(mod => mod.trimLeft(' -')); // remove end and trim away "  - "
+    return loadedLog.slice(0, lastModIndex).map(mod => _.trimStart(mod, ' -')); // remove end and trim away "  - "
 }
 
 function getStartupLogs(loadedLog) {
@@ -154,6 +154,7 @@ function newListItem(text) {
 
 function newLogListItem(logItems) {
     const li = document.createElement("li");
+    const flex = document.createElement("div");
     const content = document.createElement("p");
     if(typeof logItems[0].content === 'object') {
         content.innerText = `(${logItems.length}x) ${logItems[0].content[0]}`;
@@ -168,28 +169,31 @@ function newLogListItem(logItems) {
         unknown.innerText = "?";
         unknown.classList.add("unknown-icon");
         unknown.title = "This output is not in the database.";
-        li.append(unknown);
+        flex.append(unknown);
         content.title = "Unknown";
+        content.classList.add("unknown");
     } else {
         content.classList.add(logItems[0].type);
     }
+    
     // Exception
     if(logItems[0].type === "exception") {
         const exception = document.createElement("p");
         exception.innerText = "!";
         exception.classList.add("exception-icon");
         exception.title = "This is an exception. Exceptions cause other (often unrelated) code to not run.";
-        li.append(exception);
+        flex.append(exception);
+        content.classList.add("exception"); // exceptions always highlight, even if unknown
     }
     // Content
-    li.append(content);
+    flex.append(content);
     // Offending mods
     if(logItems[0].offendingModNames) {
         const offending = document.createElement("p");
         offending.innerText = logItems[0].offendingModNames.join(", ");
         offending.classList.add("offending");
-        offending.title = "Mods that are probably causing this.";
-        li.append(offending);
+        offending.title = "Mods that are probably causing this. In order of likeliness.";
+        flex.append(offending);
     }
     // TODO: Automatically turn mod ids to mod names
     if(logItems[0].offendingModIds) {
@@ -197,8 +201,9 @@ function newLogListItem(logItems) {
         offending.innerText = logItems[0].offendingModIds.join(", ");
         offending.classList.add("offending");
         offending.title = "Mods that are probably causing this.";
-        li.append(offending);
+        flex.append(offending);
     }
+    li.append(flex);
     return li;
 }
 

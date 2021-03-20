@@ -29,13 +29,14 @@
 #output {
     visibility: hidden;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: auto;
+    grid-template-columns: repeat(2, 1fr);
+    // grid-template-rows: auto;
+    grid-template-rows: repeat(auto-fill, 120px);
     grid-auto-flow: dense;
 }
 
 #output h2 {
-    grid-column-start: span 3;
+    grid-column-start: span 2;
 }
 
 #output #active-mods-list {
@@ -43,54 +44,62 @@
 }
 
 #output #warnings-errors-runtime-list {
-    grid-column-start: span 2;
+    // grid-column-start: span 2;
 }
 
 #output #errors-startup-list {
-    grid-column-start: span 2;
+    // grid-column-start: span 2;
 }
 
-#output li {
+#output li p {
+    margin: 0px;
+    font-size: smaller;
+}
+
+#output li div {
     display: flex;
     flex-wrap: wrap;
     margin: 4px;
 }
 
-#output li p {
-    font-size: smaller;
+#output li div p {
+    font-size: x-small;
     padding: 1px 4px;
     border-radius: 8px;
     margin: 2px;
     flex: 1;
+    flex-shrink: 1;
     background-color: rgb(28, 48, 48);
+    overflow: auto; // so flex doesn't wrap this item
 }
 
-#output li p.warning {
+#output li div p.warning {
     background-color: rgb(100, 72, 0);
 }
-#output li p.error {
+#output li div p.error {
     background-color: rgb(68, 0, 0);
 }
-
-#output li p.exception {
+#output li div p.exception {
     background-color: rgb(158, 0, 0);
 }
 
-#output li p.unknown-icon {
+#output li div p.unknown-icon {
     background-color: rgb(28, 48, 48);
     font-weight: bold;
-    font-size: x-large;
-    flex:unset;
-    width: 12px;
+    font-size: larger;
+    flex: unset;
+    flex-shrink: 0;
+    width: 9px;
     text-align: center;
 }
 
-#output li p.exception-icon {
+#output li div p.exception-icon {
     background-color: rgb(158, 0, 0);
     font-weight: bold;
-    font-size: x-large;
-    flex:unset;
-    width: 12px;
+    font-size: larger;
+    flex: unset;
+    flex-shrink: 0;
+    width: 9px;
     text-align: center;
 }
 
