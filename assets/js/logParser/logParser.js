@@ -17,15 +17,20 @@ function classifyLog(logs, index, situation) {
     if(!current || current.startsWith("(") || current.startsWith(" ")) return null;
 
     // Exceptions
-    if(next && next.startsWith("  at ")) {
+    if(next && next.startsWith("  at ") || current.includes("Exception:")) {
         const content = getExceptionContent(logs, index);
         const known = checkClassifiersException(content, situation);
         if(known) return known;
-        else return {
-            type: "exception",
-            content: current,
-            unknown: true
-        };
+        
+        else {
+            const offendingNamespaces = getOffendingNamespaces(content);
+            return {
+                type: "exception",
+                content: current,
+                unknown: true,
+                offendingModIds: offendingNamespaces
+            };
+        }
     }
 
     // Warnings & errors
@@ -53,12 +58,11 @@ function getExceptionContent(logs, index) {
         index++;
         if(index >= logs.length) break;
         next = logs[index];
-        if(next.startsWith("  at ")) {
+        if(!next.startsWith("(Filename:")) {
             result += "\n"
             result += next;
         } else break;
     }
-    console.log(result);
     return result;
 }
 
@@ -94,9 +98,31 @@ function tryMatch(content, check) {
     check = check.replaceAll("%f", "([+-]?[0-9]+(?:[.][0-9]+)?)"); // capture floats and ints
     //check = `^${check}$`;
     const result = content.match(check);
-    console.log(`Checked against '${check}':\n${content}\n`)
-    if(result) console.log(result);
+    //console.log(`Checked against '${check}':\n${content}\n`)
+    //if(result) console.log(result);
     return result;
+}
+
+function getOffendingNamespaces(content) {
+    const match = content.matchAll(/  at(?: \(.*\))* (.+?)\./g); // at (bla bla) namespace.something
+    
+    function* processMatch() {
+        for (const item of match) {
+            const ns = item[1];
+            if(isKnownNamespace(ns)) continue;
+            yield ns;
+        }
+    }
+    return _.uniq([...processMatch()]);
+}
+
+function isKnownNamespace(namespace) {
+    switch (namespace) {
+        case "System": return true;
+        case "Verse": return true;
+        case "RimWorld": return true;
+        default: return false;
+    }
 }
 
 // Load all other script files inside this and subfolders 
