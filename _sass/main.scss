@@ -25,6 +25,10 @@ section {
     padding-top: 20px;
 }
 
+section p {
+    text-align: left;    
+}
+
 @keyframes appear {
     0% {
         transform: scale(0);

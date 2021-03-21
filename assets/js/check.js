@@ -62,7 +62,6 @@ function parseUrl(data) {
 
     output.style.display = "block";
     outputHeader.style.display = "block";
-    info.style.display = "none";
 
     // STARTUP (from start to first load)
     checkStartup(log);

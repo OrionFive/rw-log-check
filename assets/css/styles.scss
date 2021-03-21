@@ -32,9 +32,9 @@
     column-fill: balance-all;
 }
 
-#output #output-header {
+#output-header p {
     //grid-column-start: span 2;
-    display: block;
+    text-align: center;
 }
 
 #output li p {

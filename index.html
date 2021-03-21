@@ -8,10 +8,7 @@ title: Orion's RimWorld Log Checker
 <script src="assets/js/check.js" defer></script>
   
 <div class="container">
-    <h1>What is this?</h1>
-    <p>This is a (WIP) tool to analyse RimWorld log files for common problems.</p>
     <p>Fill in the address of your RimWorld log below. The checker will scan in for useful information and known problems.</p>
-    <p>Note: Point at the items to get more information</p>
     <form id="input-log">
         <label for="input-log-url">Log URL:</label>
         <input name="log" type="url" id="input-log-url" placeholder="https://gist.github.com/HugsLibRecordKeeper/..." required>
@@ -20,12 +17,29 @@ title: Orion's RimWorld Log Checker
     <p class="error-bubble">ERROR!</p>
     <p class="success-bubble">SUCCESS!</p>
 
-    <section id="info">
-    </section>
     <section id="output-header">
         <h2>Output</h2>
         <p><i>Note: Point at the items to get more information</i></p>
     </section>
     <section id="output">
+
+    </section>
+    <section id="info">
+        <h2>What is this?</h2>
+        <p>This is a (WIP) tool to analyse RimWorld log files for common problems.</p>
+        <p>It looks at what is usually relevant for finding problems: Errors you get on startup, and warnings and errors that you get at runtime.</p>
+        <h2>How do I get a log file?</h2>
+        <p>You have to have HugsLib loaded. Then you can press CTRL-F12 ingame and a dialog will allow you to upload your log. From this you will get a link that you can paste here.</p>
+        <p>I recommend playing until the problem occurs for the first time and then creating the log.</p>
+        <h2>What do I do with this?</h2>
+        <p>Errors are generally bad. They mean something doesn't work as it should. Warnings can be ignored most of the time. Exceptions are like errors, but worse. When an exception happens, the code after the exception will not run. This means that related and often even unrelated code won't run, and strange this will happen. This is often how one mod breaks the functionality of another.</p>
+        <p>This tool will try and indentify mods that are involved in an error or exception. These may be causing the problem, but they might also be the victim of the issue. But it's a starting point.</p>
+        <h2>So I've got errors, now what?</h2>
+        <p>Unfortunately, if you have an ongoing game, only few mods (usually quality-of-life mods) can be removed safely. Other mods will break your game if you load the save file without them (don't save this!), making the problem worse.</p>
+        <p>If you use many mods, I recommend having the developer mode on, so the console pops up when an error occurs. Otherwise you won't know when your game gets corrupted.</p>
+        <p>Make sure you don't have any errors after startup. These usually mean you're using an outdated, broken, or conflicting mod. Try removing mods until this doesn't happen anymore. However, after removing mods, you usually will have to start a new game.</p>
+        <p>Make sure you don't have any errors after starting a new game. Many errors will only manifest as you play. Saving a game after you have had errors can often create a broken save game. If you load it again later, the damage is already done, and the problem won't show in the log (only the symptoms).</p>
+        <p>So if you have an error while playing, create a log, but don't save (at least don't overwrite your save file). This way you can go back to a version that didn't have the error yet.</p>
+        <p>Good luck!</p>
     </section>
 </div>
