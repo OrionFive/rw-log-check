@@ -7,11 +7,16 @@ const logInput = document.querySelector("#input-log input");
 const logButton = document.querySelector("#input-log button");
 const errorBox = document.querySelector(".error-bubble");
 const successBox = document.querySelector(".success-bubble");
+const output = document.querySelector("#output");
+const info = document.querySelector("#info");
+const outputHeader = document.querySelector("#output-header");
 
 logInput.addEventListener('input', () => { logButton.disabled = false; });
 logInput.addEventListener('focus', onLogInputFocus());
 logInput.focus();
 window.setTimeout(onLogInputFocus, 50);
+output.style.display = "none";
+outputHeader.style.display = "none";
 
 if(urlParams.has('log'))
 {
@@ -55,7 +60,9 @@ function checkResponse(response){
 function parseUrl(data) {
     const log = data.split('\n');
 
-    document.getElementById("output").style.visibility = "visible";
+    output.style.display = "block";
+    outputHeader.style.display = "block";
+    info.style.display = "none";
 
     // STARTUP (from start to first load)
     checkStartup(log);
@@ -67,7 +74,8 @@ function parseUrl(data) {
 function checkStartup(log) {
     const startupLogs = getStartupLogs(log);
     const startupErrors = getErrors(startupLogs);
-    outputList("startup-errors-list", startupErrors, newLogListItem, "Errors at startup");
+    const list = createOutputList("startup-errors-list", startupErrors, newLogListItem, "Errors at startup");
+    output.append(list);
 }
 
 function checkLoadedGame(log) {
@@ -75,13 +83,15 @@ function checkLoadedGame(log) {
     const loadedLog = log.slice(startLoadedIndex);
 
     const mods = getLoadedMods(loadedLog);
-    outputList("active-mods-list", mods, newListItem, "Active mods");
+    const list = createOutputList("active-mods-list", mods, newListItem, "Active mods");
+    output.prepend(list);
 
     const consoleLogs = getConsoleLogs(loadedLog);
     const warnings = getWarnings(consoleLogs);
     const errors = getErrors(consoleLogs);
     const combined = warnings.concat(errors);
-    outputList("warnings-errors-runtime-list", combined, newLogListItem, "Errors & warnings after load");
+    const list2 = createOutputList("warnings-errors-runtime-list", combined, newLogListItem, "Errors & warnings after load");
+    output.append(list2);
 }
 
 function getLoadedMods(loadedLog) {
@@ -131,13 +141,11 @@ function parseOutput(log, situation) {
     return result;
 }
 
-function outputList(listId, items, itemConstructor, title) {
+function createOutputList(listId, items, itemConstructor, title) {
     if(items.length == 0) return;
 
-    const output = document.getElementById("output");
     const list = document.createElement("section");
     list.id = listId;
-    output.append(list);
     
     const header = document.createElement("h3");  
     const amount = _.isArray(items[0]) ? _.sumBy(items, i=>i.length) : items.length;
@@ -151,6 +159,7 @@ function outputList(listId, items, itemConstructor, title) {
         ul.appendChild(child);
     });
     list.append(ul);
+    return list;
 }
 
 function newListItem(text) {

@@ -27,28 +27,14 @@
 }
 
 #output {
-    visibility: hidden;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
     // grid-template-rows: auto;
-    grid-template-rows: repeat(auto-fill, 120px);
-    grid-auto-flow: dense;
+    column-count: 2;
+    column-fill: balance-all;
 }
 
-#output h2 {
-    grid-column-start: span 2;
-}
-
-#output #active-mods-list {
-    grid-row-start: span 4;
-}
-
-#output #warnings-errors-runtime-list {
-    // grid-column-start: span 2;
-}
-
-#output #errors-startup-list {
-    // grid-column-start: span 2;
+#output #output-header {
+    //grid-column-start: span 2;
+    display: block;
 }
 
 #output li p {
