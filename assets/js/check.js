@@ -74,23 +74,26 @@ function checkStartup(log) {
     const startupLogs = getStartupLogs(log);
     const startupErrors = getErrors(startupLogs);
     const list = createOutputList("startup-errors-list", startupErrors, newLogListItem, "Errors at startup");
-    output.append(list);
+    if (list) output.append(list);
 }
 
 function checkLoadedGame(log) {
-    const startLoadedIndex = log.findIndex(l => l.startsWith("Loading game from file"));
+    let startLoadedIndex = log.findIndex(l => l.startsWith("Loading game from file"));
+    if (startLoadedIndex === -1) {
+        startLoadedIndex = 0; // Use all content if marker not found
+    }
     const loadedLog = log.slice(startLoadedIndex);
 
     const mods = getLoadedMods(loadedLog);
     const list = createOutputList("active-mods-list", mods, newListItem, "Active mods");
-    output.prepend(list);
+    if (list) output.prepend(list);
 
     const consoleLogs = getConsoleLogs(loadedLog);
     const warnings = getWarnings(consoleLogs);
     const errors = getErrors(consoleLogs);
     const combined = warnings.concat(errors);
     const list2 = createOutputList("warnings-errors-runtime-list", combined, newLogListItem, "Errors & warnings after load");
-    output.append(list2);
+    if (list2) output.append(list2);
 }
 
 function getLoadedMods(loadedLog) {
@@ -101,7 +104,10 @@ function getLoadedMods(loadedLog) {
 
 function getStartupLogs(loadedLog) {
     const firstLineIndex = loadedLog.findIndex(l => l.startsWith("Log file contents:"));
-    const lastLineIndex = loadedLog.findIndex(l => l.startsWith("Loading game from file"));
+    let lastLineIndex = loadedLog.findIndex(l => l.startsWith("Loading game from file"));
+    if (lastLineIndex === -1) {
+        lastLineIndex = loadedLog.length; // Use all content if marker not found
+    }
 
     const sliced = loadedLog.slice(firstLineIndex, lastLineIndex);
     const parsed = iterateLog(sliced, situations.startup);
@@ -127,10 +133,14 @@ function iterateLog(slicedLog, situation) {
 }
 
 function getWarnings(consoleLogs) {
-    return _.filter(consoleLogs, log => log[0].type === "warning");
+    // consoleLogs is an object from _.groupBy, convert to array of arrays
+    const logsArray = Object.values(consoleLogs);
+    return _.filter(logsArray, log => log && log[0] && log[0].type === "warning");
 }
 function getErrors(consoleLogs) {
-    return _.filter(consoleLogs, log => log[0].type === "error" || log[0].type === "exception");
+    // consoleLogs is an object from _.groupBy, convert to array of arrays  
+    const logsArray = Object.values(consoleLogs);
+    return _.filter(logsArray, log => log && log[0] && (log[0].type === "error" || log[0].type === "exception"));
 }
 
 function parseOutput(log, situation) {
@@ -141,7 +151,7 @@ function parseOutput(log, situation) {
 }
 
 function createOutputList(listId, items, itemConstructor, title) {
-    if(items.length == 0) return;
+    if(!items || items.length == 0) return null;
 
     const list = document.createElement("section");
     list.id = listId;
@@ -170,6 +180,9 @@ function newListItem(text) {
 }
 
 function newLogListItem(logItems) {
+    if (!logItems || !Array.isArray(logItems) || logItems.length === 0 || !logItems[0]) {
+        return null;
+    }
     const li = document.createElement("li");
     const flex = document.createElement("div");
     const content = document.createElement("p");
