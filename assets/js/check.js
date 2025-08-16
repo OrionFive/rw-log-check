@@ -74,7 +74,7 @@ function checkStartup(log) {
     const startupLogs = getStartupLogs(log);
     const startupErrors = getErrors(startupLogs);
     const list = createOutputList("startup-errors-list", startupErrors, newLogListItem, "Errors at startup");
-    output.append(list);
+    if (list) output.append(list);
 }
 
 function checkLoadedGame(log) {
@@ -86,14 +86,14 @@ function checkLoadedGame(log) {
 
     const mods = getLoadedMods(loadedLog);
     const list = createOutputList("active-mods-list", mods, newListItem, "Active mods");
-    output.prepend(list);
+    if (list) output.prepend(list);
 
     const consoleLogs = getConsoleLogs(loadedLog);
     const warnings = getWarnings(consoleLogs);
     const errors = getErrors(consoleLogs);
     const combined = warnings.concat(errors);
     const list2 = createOutputList("warnings-errors-runtime-list", combined, newLogListItem, "Errors & warnings after load");
-    output.append(list2);
+    if (list2) output.append(list2);
 }
 
 function getLoadedMods(loadedLog) {
@@ -151,7 +151,7 @@ function parseOutput(log, situation) {
 }
 
 function createOutputList(listId, items, itemConstructor, title) {
-    if(items.length == 0) return;
+    if(!items || items.length == 0) return null;
 
     const list = document.createElement("section");
     list.id = listId;
@@ -180,6 +180,9 @@ function newListItem(text) {
 }
 
 function newLogListItem(logItems) {
+    if (!logItems || !Array.isArray(logItems) || logItems.length === 0 || !logItems[0]) {
+        return null;
+    }
     const li = document.createElement("li");
     const flex = document.createElement("div");
     const content = document.createElement("p");
