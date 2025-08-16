@@ -43,6 +43,34 @@ function classifyLog(log, situation) {
         unknown: true
         };
     }
+    
+    // Check for common error patterns without filename info
+    const errorPatterns = [
+        "Could not load reference",
+        "Could not find",
+        "Could not resolve",
+        "Null key while loading",
+        "Config error",
+        "XML error",
+        "Failed to find"
+    ];
+    
+    // Exclude Harmony patch listings
+    const excludePatterns = [": PRE:", ": post:", ": TRANS:", "Prefixes:", "Postfixes:", "Transpilers:"];
+    if (excludePatterns.some(pattern => current.includes(pattern))) {
+        return null;
+    }
+    
+    if (errorPatterns.some(pattern => current.includes(pattern))) {
+        const known = checkClassifiersNormal(current, situation);
+        if(known) return known;
+        else return {
+            type: "error",
+            content: current,
+            unknown: true
+        };
+    }
+    
     // Other
     return {
         type: "message",
