@@ -78,7 +78,10 @@ function checkStartup(log) {
 }
 
 function checkLoadedGame(log) {
-    const startLoadedIndex = log.findIndex(l => l.startsWith("Loading game from file"));
+    let startLoadedIndex = log.findIndex(l => l.startsWith("Loading game from file"));
+    if (startLoadedIndex === -1) {
+        startLoadedIndex = 0; // Use all content if marker not found
+    }
     const loadedLog = log.slice(startLoadedIndex);
 
     const mods = getLoadedMods(loadedLog);
@@ -101,7 +104,10 @@ function getLoadedMods(loadedLog) {
 
 function getStartupLogs(loadedLog) {
     const firstLineIndex = loadedLog.findIndex(l => l.startsWith("Log file contents:"));
-    const lastLineIndex = loadedLog.findIndex(l => l.startsWith("Loading game from file"));
+    let lastLineIndex = loadedLog.findIndex(l => l.startsWith("Loading game from file"));
+    if (lastLineIndex === -1) {
+        lastLineIndex = loadedLog.length; // Use all content if marker not found
+    }
 
     const sliced = loadedLog.slice(firstLineIndex, lastLineIndex);
     const parsed = iterateLog(sliced, situations.startup);
