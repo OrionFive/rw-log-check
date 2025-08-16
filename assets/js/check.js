@@ -127,10 +127,14 @@ function iterateLog(slicedLog, situation) {
 }
 
 function getWarnings(consoleLogs) {
-    return _.filter(consoleLogs, log => log[0].type === "warning");
+    // consoleLogs is an object from _.groupBy, convert to array of arrays
+    const logsArray = Object.values(consoleLogs);
+    return _.filter(logsArray, log => log && log[0] && log[0].type === "warning");
 }
 function getErrors(consoleLogs) {
-    return _.filter(consoleLogs, log => log[0].type === "error" || log[0].type === "exception");
+    // consoleLogs is an object from _.groupBy, convert to array of arrays  
+    const logsArray = Object.values(consoleLogs);
+    return _.filter(logsArray, log => log && log[0] && (log[0].type === "error" || log[0].type === "exception"));
 }
 
 function parseOutput(log, situation) {
